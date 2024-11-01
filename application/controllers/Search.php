@@ -9,10 +9,9 @@ class Search extends CI_Controller {
     }
 
 public function index() {
-    $user = $this->input->get('user', TRUE); // Automatically applies XSS filtering
-    $data['user'] = html_escape($user); // Additional XSS protection for displaying in the view
+    $user = $this->input->get('user', TRUE);
+    $data['user'] = html_escape($user); 
 
-    // Pass the sanitized input to the model
     $data['results'] = $this->Search_model->get_global_search_results($this->db->escape_like_str($user));
 
     $this->load->view('template/header');

@@ -47,6 +47,12 @@
             <input type="file" class="form-control" name="no_sdn" accept="application/pdf" required>
         </div>
 
+        <!-- File Upload for Topology -->
+        <div class="mb-3">
+            <label for="topology" class="form-label">Topology (PDF)</label>
+            <input type="file" class="form-control" name="topology" accept="application/pdf">
+        </div>
+
         <!-- Form Submit and Cancel Buttons -->
         <button type="submit" class="btn btn-primary">Add Customer</button>
         <a href="<?= base_url('customer/group_details/' . $group_id); ?>" class="btn btn-secondary">Cancel</a>

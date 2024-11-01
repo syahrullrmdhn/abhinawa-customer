@@ -65,4 +65,22 @@ class supplier extends CI_Controller {
         $this->session->set_flashdata('success', 'Supplier deleted successfully.');
         redirect('supplier');
     }
+    public function view_suppliers() {
+        // Cek apakah pengguna sudah login dan memiliki role_id 1, 2, atau 3
+        $allowed_roles = [1, 2, 3]; // Role yang diizinkan
+        if (!$this->session->userdata('logged_in') || !in_array($this->session->userdata('role_id'), $allowed_roles)) {
+            // Jika pengguna tidak memiliki akses, redirect ke halaman login atau halaman utama
+            $this->session->set_flashdata('error', 'Anda tidak memiliki akses ke halaman ini.');
+            redirect('auth'); // Sesuaikan dengan halaman login atau dashboard yang sesuai
+        }
+    
+        // Jika pengguna memiliki akses, tampilkan daftar supplier
+        $data['suppliers'] = $this->supplier_model->get_all_suppliers();
+        $data['title'] = 'Supplier List (Read-Only)';
+        
+        $this->load->view('template/header', $data);
+        $this->load->view('supplier/supplier_list_user', $data); // View read-only
+        $this->load->view('template/footer');
+    }
+    
 }

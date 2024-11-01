@@ -1,74 +1,58 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class user extends CI_Controller {
+class User extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('User_model');
+        $this->load->model('user_model');
+        $this->load->model('role_model');
         $this->load->library('session');
         $this->load->helper('url');
+    }
 
-        if (!in_array($this->session->userdata('username'), ['syahrul', 'daulay', 'toni'])) {
-            $this->session->set_flashdata('error', 'Access denied. You do not have permission to view this page.');
-            redirect('admin'); 
-        }
-}
-
-    // Display all users
     public function index() {
-        $data['users'] = $this->User_model->get_all_users();
+        $data['users'] = $this->user_model->get_all_users();
         $this->load->view('template/header');
         $this->load->view('user/user_list', $data);
         $this->load->view('template/footer');
     }
 
-    // Display form to add a new user
     public function create() {
+        $data['roles'] = $this->role_model->get_all_roles();
         $this->load->view('template/header');
-        $this->load->view('user/user_create');
+        $this->load->view('user/user_create', $data);
         $this->load->view('template/footer');
     }
 
-    // Save new user to database
     public function store() {
-        $data = [
-            'username' => $this->input->post('username'),
-            'password' => md5($this->input->post('password'))
-        ];
-        $this->User_model->insert_user($data);
-        $this->session->set_flashdata('success', 'User added successfully.');
+        $username = $this->input->post('username');
+        $password = md5($this->input->post('password'));
+        $role_id = $this->input->post('role_id');
+
+        $this->user_model->create_user($username, $password, $role_id);
+        $this->session->set_flashdata('success', 'User berhasil ditambahkan.');
         redirect('user');
     }
 
-    // Display form to edit an existing user
     public function edit($id) {
-        $data['user'] = $this->User_model->get_user_by_id($id);
+        $data['user'] = $this->user_model->get_user_by_id($id);
+        $data['roles'] = $this->role_model->get_all_roles();
         $this->load->view('template/header');
         $this->load->view('user/user_edit', $data);
         $this->load->view('template/footer');
     }
 
-    // Update user details in the database
     public function update($id) {
-        $data = [
-            'username' => $this->input->post('username'),
-            'password' => md5($this->input->post('password'))
-        ];
-
-        if (empty($data['password'])) {
-            unset($data['password']); // Do not update password if it’s empty
-        }
-
-        $this->User_model->update_user($id, $data);
-        $this->session->set_flashdata('success', 'User updated successfully.');
+        $role_id = $this->input->post('role_id');
+        $this->user_model->update_role($id, $role_id);
+        $this->session->set_flashdata('success', 'Role user berhasil diupdate.');
         redirect('user');
     }
 
-    // Delete user
     public function delete($id) {
-        $this->User_model->delete_user($id);
-        $this->session->set_flashdata('success', 'User deleted successfully.');
+        $this->user_model->delete_user($id);
+        $this->session->set_flashdata('success', 'User berhasil dihapus.');
         redirect('user');
     }
 }

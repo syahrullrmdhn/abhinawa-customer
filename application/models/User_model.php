@@ -1,48 +1,35 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class user_model extends CI_Model {
+class User_model extends CI_Model {
 
-    // Get all users
     public function get_all_users() {
-        $sql = "SELECT * FROM users";
-        $query = $this->db->query($sql);
+        $this->db->select('users.id, users.username, users.created_at, roles.role_name');
+        $this->db->from('users');
+        $this->db->join('roles', 'users.role_id = roles.id');
+        $query = $this->db->get();
         return $query->result();
     }
 
-    // Get user by ID
+    public function create_user($username, $password, $role_id) {
+        $data = [
+            'username' => $username,
+            'password' => $password,
+            'role_id' => $role_id
+        ];
+        $this->db->insert('users', $data);
+    }
+
     public function get_user_by_id($id) {
-        $sql = "SELECT * FROM users WHERE id = ?";
-        $query = $this->db->query($sql, array($id));
-        return $query->row();
+        return $this->db->get_where('users', ['id' => $id])->row();
     }
 
-    // Insert new user
-    public function insert_user($data) {
-        $data['password'] = md5($data['password']); // Hash the password with MD5
-        $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-        return $this->db->query($sql, array($data['username'], $data['password']));
+    public function update_role($id, $role_id) {
+        $this->db->where('id', $id);
+        $this->db->update('users', ['role_id' => $role_id]);
     }
 
-    // Update user by ID
-    public function update_user($id, $data) {
-        if (!empty($data['password'])) {
-            $data['password'] = md5($data['password']); // Hash the password with MD5
-            $sql = "UPDATE users SET username = ?, password = ? WHERE id = ?";
-            return $this->db->query($sql, array($data['username'], $data['password'], $id));
-        } else {
-            $sql = "UPDATE users SET username = ? WHERE id = ?";
-            return $this->db->query($sql, array($data['username'], $id));
-        }
-    }
-
-    // Delete user by ID
     public function delete_user($id) {
-        $sql = "DELETE FROM users WHERE id = ?";
-        return $this->db->query($sql, array($id));
-    }
-    public function update_password($id, $new_password) {
-        $sql = "UPDATE users SET password = ? WHERE id = ?";
-        return $this->db->query($sql, array($new_password, $id));
+        $this->db->delete('users', ['id' => $id]);
     }
 }

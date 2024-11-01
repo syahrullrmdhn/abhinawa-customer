@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class auth extends CI_Controller {
+class Auth extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -19,12 +19,13 @@ class auth extends CI_Controller {
 
     public function login() {
         $username = $this->input->post('username');
-        $password = md5($this->input->post('password')); // Use MD5 for password hashing
+        $password = md5($this->input->post('password')); // Gunakan MD5 untuk hashing password (lebih baik menggunakan bcrypt di masa depan)
         $user = $this->auth_model->check_user($username, $password);
     
         if ($user) {
             $session_data = [
                 'username' => $user->username,
+                'role_id' => $user->role_id, // Menyimpan role_id di session
                 'logged_in' => true
             ];
             $this->session->set_userdata($session_data);
@@ -34,18 +35,20 @@ class auth extends CI_Controller {
             redirect('auth');
         }
     }
+
     public function change_password() {
         if (!$this->session->userdata('logged_in')) {
-            redirect('auth'); // Redirect to login if not logged in
+            redirect('auth'); // Redirect ke login jika belum login
         }
         $this->load->view('template/header');
         $this->load->view('auth/change_password');
         $this->load->view('template/footer');
     }
+
     // Handle password update
     public function update_password() {
         if (!$this->session->userdata('logged_in')) {
-            redirect('auth'); // Redirect to login if not logged in
+            redirect('auth'); // Redirect ke login jika belum login
         }
 
         $username = $this->session->userdata('username');
@@ -53,27 +56,27 @@ class auth extends CI_Controller {
         $new_password = $this->input->post('new_password');
         $confirm_password = $this->input->post('confirm_password');
 
-        // Check if new password and confirm password match
+        // Memastikan bahwa password baru dan konfirmasi password cocok
         if ($new_password !== $confirm_password) {
-            $this->session->set_flashdata('error', 'New password and confirm password do not match.');
+            $this->session->set_flashdata('error', 'Password baru dan konfirmasi password tidak cocok.');
             redirect('auth/change_password');
         }
 
-        // Verify the old password
+        // Verifikasi password lama
         $user = $this->auth_model->check_user($username, md5($old_password));
         if (!$user) {
-            $this->session->set_flashdata('error', 'Old password is incorrect.');
+            $this->session->set_flashdata('error', 'Password lama salah.');
             redirect('auth/change_password');
         }
 
-        // Update the password if old password is correct
-        $this->user_model->update_password($user->id, md5($new_password));
-        $this->session->set_flashdata('success', 'Password changed successfully.');
+        // Update password jika password lama benar
+        $this->auth_model->update_password($user->id, md5($new_password));
+        $this->session->set_flashdata('success', 'Password berhasil diubah.');
         redirect('auth/change_password');
     }
     
     public function logout() {
-        $this->session->unset_userdata(['username', 'logged_in']);
+        $this->session->unset_userdata(['username', 'role_id', 'logged_in']);
         $this->session->sess_destroy();
         redirect('auth');
     }

@@ -27,44 +27,49 @@
         </div>
 
         <!-- Sidebar navigation-->
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+        <?php
+$role_id = $this->session->userdata('role_id'); // Ambil role_id dari session
+?>
+
+<!-- Sidebar navigation-->
+<?php
+$role_id = $this->session->userdata('role_id'); // Ambil role_id dari session
+?>
+
+<!-- Sidebar navigation-->
+<nav class="sidebar-nav scroll-sidebar" data-simplebar="">
   <ul id="sidebarnav">
     <!-- Home -->
-    <li class="nav-small-cap">
-      <i class="fas fa-home nav-small-cap-icon fs-4"></i>
-      <span class="hide-menu">Home</span>
-    </li>
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="<?= base_url('admin'); ?>" aria-expanded="false">
-        <i class="fas fa-tachometer-alt"></i> <!-- Dashboard Icon -->
-        <span class="hide-menu">Dashboard</span>
-      </a>
-    </li>
+    <?php if (in_array($role_id, [1, 2])): // Hanya Administrator dan Manager yang bisa melihat Dashboard dan Master section ?>
+      <li class="nav-small-cap">
+        <i class="fas fa-home nav-small-cap-icon fs-4"></i>
+        <span class="hide-menu">Home</span>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="<?= base_url('admin'); ?>" aria-expanded="false">
+          <i class="fas fa-tachometer-alt"></i> <!-- Dashboard Icon -->
+          <span class="hide-menu">Dashboard</span>
+        </a>
+      </li>
 
-    <!-- Master Section -->
-    <li class="nav-small-cap">
-      <i class="fas fa-cogs nav-small-cap-icon fs-4"></i>
-      <span class="hide-menu">Master</span>
-    </li>
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="<?= base_url('service_type'); ?>" aria-expanded="false">
-        <i class="fas fa-cog"></i> <!-- Service Type Icon -->
-        <span class="hide-menu">Master Service Type</span>
-      </a>
-    </li>
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="<?= base_url('supplier'); ?>" aria-expanded="false">
-        <i class="fas fa-truck"></i> <!-- Supplier Icon -->
-        <span class="hide-menu">Master Supplier</span>
-      </a>
-    </li>
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="<?= base_url('customer_groups'); ?>" aria-expanded="false">
-        <i class="fas fa-users"></i> <!-- Customer Group Icon -->
-        <span class="hide-menu">Master Customer Group</span>
-      </a>
-    </li>
-
+      <!-- Master Section -->
+      <li class="nav-small-cap">
+        <i class="fas fa-cogs nav-small-cap-icon fs-4"></i>
+        <span class="hide-menu">Master</span>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="<?= base_url('service_type'); ?>" aria-expanded="false">
+          <i class="fas fa-cog"></i> <!-- Service Type Icon -->
+          <span class="hide-menu">Master Service Type</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="<?= base_url('customer_groups'); ?>" aria-expanded="false">
+          <i class="fas fa-users"></i> <!-- Customer Group Icon -->
+          <span class="hide-menu">Master Customer Group</span>
+        </a>
+      </li>
+    <?php endif; ?>
     <!-- Main Data Section -->
     <li class="nav-small-cap">
       <i class="fas fa-database nav-small-cap-icon fs-4"></i>
@@ -76,45 +81,52 @@
         <span class="hide-menu">Customer List</span>
       </a>
     </li>
-    <!-- Management Section -->
+    <!-- Supplier List Section (Accessible by role_id 1, 2, and 3) -->
+    <?php if (in_array($role_id, [1, 2, 3])): ?>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="<?= base_url('supplier/view_suppliers'); ?>" aria-expanded="false">
+          <i class="fas fa-truck"></i> <!-- Supplier Icon -->
+          <span class="hide-menu">Supplier List</span>
+        </a>
+      </li>
+    <?php endif; ?>
+    <!-- Search Section -->
     <li class="nav-small-cap">
-      <i class="fas fa-user-cog nav-small-cap-icon fs-4"></i>
+      <i class="fas fa-search nav-small-cap-icon fs-4"></i>
       <span class="hide-menu">Search</span>
     </li>
-        <li class="sidebar-item">
+    <li class="sidebar-item">
       <a class="sidebar-link" href="<?= base_url('Search'); ?>" aria-expanded="false">
         <i class="fas fa-search"></i>
         <span class="hide-menu">Global Search</span>
       </a>
     </li>
-    <!-- Management Section -->
-    <li class="nav-small-cap">
-      <i class="fas fa-user-cog nav-small-cap-icon fs-4"></i>
-      <span class="hide-menu">Manajemen</span>
-    </li>
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="<?= base_url('user'); ?>" aria-expanded="false">
-        <i class="fas fa-user"></i> <!-- User Icon -->
-        <span class="hide-menu">User</span>
-      </a>
-    </li>
-    <li class="sidebar-item">
-      <a class="sidebar-link" href="<?= base_url('auth/change_password'); ?>" aria-expanded="false">
-        <i class="fas fa-key"></i> <!-- Change Password Icon -->
-        <span class="hide-menu">Change Password</span>
-      </a>
-    </li>
-  </ul>
 
-  <div class="unlimited-access hide-menu bg-light-primary position-relative mb-7 mt-5 rounded">
-    <div class="d-flex">
-      <div class="unlimited-access-img">
-        <img src="<?= base_url('/assets/images/backgrounds/rocket.png');?>" alt="Upgrade to Pro" class="img-fluid">
-      </div>
-    </div>
-  </div>
+    <?php if (in_array($role_id, [1, 2])): // Hanya Administrator dan Manager yang bisa melihat Management Section ?>
+      <!-- Management Section -->
+      <li class="nav-small-cap">
+        <i class="fas fa-user-cog nav-small-cap-icon fs-4"></i>
+        <span class="hide-menu">Manajemen</span>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="<?= base_url('user'); ?>" aria-expanded="false">
+          <i class="fas fa-user"></i> <!-- User Icon -->
+          <span class="hide-menu">User Management</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="<?= base_url('auth/change_password'); ?>" aria-expanded="false">
+          <i class="fas fa-key"></i> <!-- Change Password Icon -->
+          <span class="hide-menu">Change Password</span>
+        </a>
+      </li>
+    <?php endif; ?>
+  </ul>
 </nav>
-        <!-- End Sidebar navigation -->
+<!-- End Sidebar navigation -->
+
+<!-- End Sidebar navigation -->
+
       </div>
     </aside>
     <!-- Sidebar End -->
